@@ -1,9 +1,9 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 
 @Data
-public class ItemDto {
+public class ItemIncomeDto {
     private String name;
     private String description;
     private Boolean available;
