@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,6 +11,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "SELECT * FROM booking WHERE booker = ?1 ORDER BY booking_id DESC", nativeQuery = true)
     List<Booking> findAllByBookerIdAll(Long userId);
+
+    List<Booking> findAllByBookerId(Long userId, Pageable page);
 
     @Query(value = "SELECT * FROM booking WHERE booker = ?1 AND status = ?2 ORDER BY booking_id DESC", nativeQuery = true)
     List<Booking> findAllByBookerAndStatus(Long userId, String state);
@@ -25,6 +28,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "SELECT * FROM booking WHERE booking_item IN (SELECT item_id FROM items WHERE sharer_user_id = ?1) ORDER BY booking_id DESC", nativeQuery = true)
     List<Booking> findAllBySharerUserId(Long userId);
+
+    @Query(value = "SELECT * FROM booking WHERE booking_item IN (SELECT item_id FROM items WHERE sharer_user_id = ?1) ORDER BY booking_id DESC", nativeQuery = true)
+    List<Booking> findAllBySharerUserId(Long userId, Pageable page);
 
     @Query(value = "SELECT * FROM booking WHERE booking_item IN (SELECT item_id FROM items WHERE sharer_user_id = ?1) AND CURRENT_TIMESTAMP < booking_start ORDER BY booking_id DESC", nativeQuery = true)
     List<Booking> findAllBySharerUserIdFuture(Long userId);

@@ -1,10 +1,10 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.comment.model.CommentIncomeDto;
+import ru.practicum.shareit.comment.model.CommentInputDto;
 import ru.practicum.shareit.comment.model.CommentResponseDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.ItemIncomeDto;
+import ru.practicum.shareit.item.model.ItemInputDto;
 import ru.practicum.shareit.item.model.ItemTransferDto;
 
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.List;
 @Service
 public interface ItemService {
 
-    Item createItem(Long sharerUserId, ItemIncomeDto itemIncomeDto);
+    Item create(Long sharerUserId, ItemInputDto itemInputDto);
 
-    Item updateItem(Long sharerUserId, Long itemId, ItemIncomeDto itemIncomeDto);
+    Item update(Long sharerUserId, Long itemId, ItemInputDto itemInputDto);
 
     ItemTransferDto findItem(Long sharerUserId, Long itemId);
 
@@ -22,5 +22,5 @@ public interface ItemService {
 
     List<Item> findAllMatchesText(String tag);
 
-    CommentResponseDto saveCommentToItem(Long userId, Long itemId, CommentIncomeDto commentIncomeDto);
+    CommentResponseDto saveCommentToItem(Long userId, Long itemId, CommentInputDto commentInputDto);
 }

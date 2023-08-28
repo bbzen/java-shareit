@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
-import ru.practicum.shareit.booking.model.BookingShort;
+import ru.practicum.shareit.booking.model.BookingEntityDataKeeping;
 import ru.practicum.shareit.comment.model.CommentResponseDto;
 
 import java.util.List;
@@ -14,8 +14,8 @@ public class ItemTransferDto {
     private String description;
     private Boolean available;
     private Long request;
-    private BookingShort lastBooking;
-    private BookingShort nextBooking;
+    private BookingEntityDataKeeping lastBooking;
+    private BookingEntityDataKeeping nextBooking;
     private List<CommentResponseDto> comments;
 
     public ItemTransferDto(Long id, Long sharerUserId, String name, String description, Boolean available, Long request) {
