@@ -3,7 +3,7 @@ package ru.practicum.shareit.booking.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingDto;
+import ru.practicum.shareit.booking.model.BookingInputDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class BookingController {
     BookingService bookingService;
 
     @PostMapping
-    public Booking create(@RequestHeader(value = SHARER_USER_ID_HEADER) Long bookingUserId, @RequestBody BookingDto dto) {
+    public Booking create(@RequestHeader(value = SHARER_USER_ID_HEADER) Long bookingUserId, @RequestBody BookingInputDto dto) {
         return bookingService.create(bookingUserId, dto);
     }
 
@@ -31,12 +31,12 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<Booking> findAllByUserId(@RequestHeader(value = SHARER_USER_ID_HEADER) Long userId, @RequestParam(required = false) String state) {
-        return bookingService.findAllByBookerId(userId, state);
+    public List<Booking> findAllByBookerId(@RequestHeader(value = SHARER_USER_ID_HEADER) Long userId, @RequestParam(required = false) String state, @RequestParam(required = false) Integer from, @RequestParam(required = false) Integer size) {
+        return bookingService.findAllByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
-    public List<Booking> findAllBySharerUserId(@RequestHeader(value = SHARER_USER_ID_HEADER) Long userId, @RequestParam(required = false) String state) {
-        return bookingService.findAllBySharerUserId(userId, state);
+    public List<Booking> findAllBySharerUserId(@RequestHeader(value = SHARER_USER_ID_HEADER) Long userId, @RequestParam(required = false) String state, @RequestParam(required = false) Integer from, @RequestParam(required = false) Integer size) {
+        return bookingService.findAllBySharerUserId(userId, state, from, size);
     }
 }

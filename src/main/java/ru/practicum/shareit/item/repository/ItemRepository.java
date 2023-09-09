@@ -13,5 +13,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query(value = "SELECT * FROM items i WHERE (lower(item_name) LIKE lower(concat('%',?1,'%')) OR lower(item_description) LIKE lower(concat('%',?1,'%'))) and item_available  = true AND (CASE WHEN ?1 like '' THEN false ELSE true END)", nativeQuery = true)
     List<Item> findAllMatchStringDescOrder(String tag);
+
+    List<Item> findAllByRequestId(Long itemRequestId);
 }
 

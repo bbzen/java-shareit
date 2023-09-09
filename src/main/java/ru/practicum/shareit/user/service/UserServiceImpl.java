@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.model.UserEmailException;
+import ru.practicum.shareit.exception.model.UserInvalidDataException;
 import ru.practicum.shareit.exception.model.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserDto userDto) {
         checkUserData(userDto);
-        User currentUser = UserMapper.mapUserDtoToUser(userDto);
+        User currentUser = UserMapper.toUser(userDto);
         return userRepository.save(currentUser);
     }
 
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             return userRepository.save(initialUser);
         }
         log.debug("Пользователь с id {} не найден.", userId);
-        throw new UserEmailException("Пользователь с id " + userId + " не найден.");
+        throw new UserInvalidDataException("Пользователь с id " + userId + " не найден.");
     }
 
     @Override
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     private boolean checkUserName(UserDto userDto) {
         if (userDto.getName() == null || userDto.getName().isBlank()) {
             log.debug("Не указано имя пользователя.");
-            throw new UserEmailException("Не указано имя пользователя.");
+            throw new UserInvalidDataException("Не указано имя пользователя.");
         }
         return true;
     }
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     private boolean checkUserEmail(UserDto userDto) {
         if (userDto.getEmail() == null || !userDto.getEmail().matches(".+@.+\\..+")) {
             log.debug("Не верно указан email пользователя.");
-            throw new UserEmailException("Не верно указан email пользователя.");
+            throw new UserInvalidDataException("Не верно указан email пользователя.");
         }
         return true;
     }

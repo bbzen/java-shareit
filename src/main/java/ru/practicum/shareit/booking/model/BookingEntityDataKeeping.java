@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BookingShort {
+public class BookingEntityDataKeeping {
     private Long id;
     private Long bookerId;
 }

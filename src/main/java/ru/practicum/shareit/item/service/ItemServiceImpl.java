@@ -2,14 +2,14 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.comment.mapper.CommentMapper;
 import ru.practicum.shareit.comment.model.Comment;
-import ru.practicum.shareit.comment.model.CommentIncomeDto;
+import ru.practicum.shareit.comment.model.CommentInputDto;
 import ru.practicum.shareit.comment.model.CommentResponseDto;
 import ru.practicum.shareit.comment.repository.CommentRepository;
 import ru.practicum.shareit.exception.model.ItemInvalidException;
@@ -17,7 +17,7 @@ import ru.practicum.shareit.exception.model.ItemNotFoundException;
 import ru.practicum.shareit.exception.model.UserNotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.ItemIncomeDto;
+import ru.practicum.shareit.item.model.ItemInputDto;
 import ru.practicum.shareit.item.model.ItemTransferDto;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -29,21 +29,24 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Transactional
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
+    @Autowired
     private ItemRepository itemRepository;
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
     private CommentRepository commentRepository;
 
     @Override
-    public Item createItem(Long sharerUserId, ItemIncomeDto itemIncomeDto) {
-        doAllChecks(itemIncomeDto);
+    public Item create(Long sharerUserId, ItemInputDto itemInputDto) {
+        doAllChecks(itemInputDto);
         if (userRepository.findById(sharerUserId).isPresent()) {
-            Item item = ItemMapper.toItem(itemIncomeDto);
+            Item item = ItemMapper.toItem(itemInputDto);
             item.setSharerUserId(sharerUserId);
-            itemRepository.save(item);
+            item.setId(itemRepository.save(item).getId());
             return item;
         }
         log.debug("Пользователь {} не найден! Невозможно добавить предмет.", sharerUserId);
@@ -51,18 +54,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item updateItem(Long sharerUserId, Long itemId, ItemIncomeDto itemIncomeDto) {
+    public Item update(Long sharerUserId, Long itemId, ItemInputDto itemInputDto) {
         Item updateItem = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Предмет " + itemId + " не найден."));
         User sharer = userRepository.findById(sharerUserId).orElseThrow(() -> new UserNotFoundException("Пользователь " + sharerUserId + " не найден"));
         if (sharerUserId.equals(updateItem.getSharerUserId())) {
-            if (itemIncomeDto.getAvailable() != null) {
-                updateItem.setAvailable(itemIncomeDto.getAvailable());
+            if (itemInputDto.getAvailable() != null) {
+                updateItem.setAvailable(itemInputDto.getAvailable());
             }
-            if (itemIncomeDto.getName() != null) {
-                updateItem.setName(itemIncomeDto.getName());
+            if (itemInputDto.getName() != null) {
+                updateItem.setName(itemInputDto.getName());
             }
-            if (itemIncomeDto.getDescription() != null) {
-                updateItem.setDescription(itemIncomeDto.getDescription());
+            if (itemInputDto.getDescription() != null) {
+                updateItem.setDescription(itemInputDto.getDescription());
+            }
+            if (itemInputDto.getRequestId() != null) {
+                updateItem.setRequestId(itemInputDto.getRequestId());
             }
             itemRepository.save(updateItem);
             return updateItem;
@@ -80,10 +86,10 @@ public class ItemServiceImpl implements ItemService {
             Booking nextBooking = bookingRepository.findNextBooking(itemId);
             Booking lastBooking = bookingRepository.findLastBooking(itemId);
             if (nextBooking != null) {
-                current.setNextBooking(BookingMapper.toBookingShort(nextBooking));
+                current.setNextBooking(BookingMapper.toBookingEntityDataKeeping(nextBooking));
             }
             if (lastBooking != null) {
-                current.setLastBooking(BookingMapper.toBookingShort(lastBooking));
+                current.setLastBooking(BookingMapper.toBookingEntityDataKeeping(lastBooking));
             }
         }
         return current;
@@ -98,10 +104,10 @@ public class ItemServiceImpl implements ItemService {
             Booking nextBooking = bookingRepository.findNextBooking(itemDto.getId());
             Booking lastBooking = bookingRepository.findLastBooking(itemDto.getId());
             if (nextBooking != null) {
-                itemDto.setNextBooking(BookingMapper.toBookingShort(nextBooking));
+                itemDto.setNextBooking(BookingMapper.toBookingEntityDataKeeping(nextBooking));
             }
             if (lastBooking != null) {
-                itemDto.setLastBooking(BookingMapper.toBookingShort(lastBooking));
+                itemDto.setLastBooking(BookingMapper.toBookingEntityDataKeeping(lastBooking));
             }
 
         }
@@ -114,45 +120,44 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentResponseDto saveCommentToItem(Long userId, Long itemId, CommentIncomeDto commentIncomeDto) {
-        if (!bookingRepository.existsByBookerIdAndItemIdAndStatusApproved(userId, itemId).isEmpty() && !commentIncomeDto.getText().isBlank()) {
+    public CommentResponseDto saveCommentToItem(Long userId, Long itemId, CommentInputDto commentInputDto) {
+        if (!bookingRepository.existsByBookerIdAndItemIdAndStatusApproved(userId, itemId).isEmpty() && !commentInputDto.getText().isBlank()) {
             User booker = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь " + userId + " не найден"));
             Item current = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Предмет " + itemId + " не найден."));
-            Comment result = CommentMapper.toComment(commentIncomeDto);
+            Comment result = CommentMapper.toComment(commentInputDto);
             result.setAuthor(booker);
             result.setItem(current);
-            commentRepository.save(result);
-            return CommentMapper.toCommentRespDto(result);
+            return CommentMapper.toCommentRespDto(commentRepository.save(result));
         }
         log.debug("Для предмета {} отсутствует заявка на бронирование! Невозможно добавить комментарий.", itemId);
         throw new ItemInvalidException("Для предмета " + itemId + " отсутствует заявка на бронирование! Невозможно добавить комментарий.");
     }
 
-    private boolean doAllChecks(ItemIncomeDto itemIncomeDto) {
-        checkIsAvailable(itemIncomeDto);
-        checkItemDescription(itemIncomeDto);
-        checkItemName(itemIncomeDto);
+    private boolean doAllChecks(ItemInputDto itemInputDto) {
+        checkIsAvailable(itemInputDto);
+        checkItemDescription(itemInputDto);
+        checkItemName(itemInputDto);
         return true;
     }
 
-    private boolean checkIsAvailable(ItemIncomeDto itemIncomeDto) {
-        if (itemIncomeDto.getAvailable() == null) {
-            log.debug("Для предмета {} не задан статус! Невозможно добавить предмет.", itemIncomeDto.getName());
-            throw new ItemInvalidException("Для предмета " + itemIncomeDto.getName() + " не задан статус! Невозможно добавить предмет.");
+    private boolean checkIsAvailable(ItemInputDto itemInputDto) {
+        if (itemInputDto.getAvailable() == null) {
+            log.debug("Для предмета {} не задан статус! Невозможно добавить предмет.", itemInputDto.getName());
+            throw new ItemInvalidException("Для предмета " + itemInputDto.getName() + " не задан статус! Невозможно добавить предмет.");
         }
         return true;
     }
 
-    private boolean checkItemName(ItemIncomeDto itemIncomeDto) {
-        if (itemIncomeDto.getName() == null || itemIncomeDto.getName().isBlank()) {
+    private boolean checkItemName(ItemInputDto itemInputDto) {
+        if (itemInputDto.getName() == null || itemInputDto.getName().isBlank()) {
             log.debug("Для предмета не задано название! Невозможно добавить предмет.");
             throw new ItemInvalidException("Для предмета не задано название! Невозможно добавить предмет.");
         }
         return true;
     }
 
-    private boolean checkItemDescription(ItemIncomeDto itemIncomeDto) {
-        if (itemIncomeDto.getDescription() == null) {
+    private boolean checkItemDescription(ItemInputDto itemInputDto) {
+        if (itemInputDto.getDescription() == null) {
             log.debug("Для предмета не задано описание! Невозможно добавить предмет.");
             throw new ItemInvalidException("Для предмета не задано описание! Невозможно добавить предмет.");
         }

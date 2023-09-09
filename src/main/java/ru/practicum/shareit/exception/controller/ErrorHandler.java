@@ -11,7 +11,7 @@ import ru.practicum.shareit.responce.ErrorResponse;
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUserNotFoundException(final UserEmailException e) {
+    public ErrorResponse handleUserNotFoundException(final UserInvalidDataException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -42,6 +42,18 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleBookingNotFound(final BookingNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemRequestBadRequest(final ItemRequestBadRequestException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFound(final ItemRequestNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
