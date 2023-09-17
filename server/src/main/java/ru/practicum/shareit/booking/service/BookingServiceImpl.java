@@ -90,14 +90,10 @@ public class BookingServiceImpl implements BookingService {
                 if (from == null || size == null) {
                     return bookingRepository.findAllByBookerIdAll(userId);
                 }
-                if (from < 0 || size <= 0) {
-                    throw new BookingBadRequestException("Не верно заданы параметры поиска бронирования.");
-                }
                 Sort sortById = Sort.by(Sort.Direction.DESC, "id");
                 Pageable page = PageRequest.of(Math.abs(from / size), size, sortById);
                 return bookingRepository.findAllByBookerId(userId, page);
             }
-
             if (state.equalsIgnoreCase("FUTURE")) {
                 return bookingRepository.findAllByBookerFuture(userId);
             }
@@ -122,9 +118,6 @@ public class BookingServiceImpl implements BookingService {
             if (state == null || state.equals("ALL")) {
                 if (from == null || size == null) {
                     return bookingRepository.findAllBySharerUserId(userId);
-                }
-                if (from < 0 || size <= 0) {
-                    throw new BookingBadRequestException("Не верно заданы параметры поиска бронирования.");
                 }
                 Pageable page = PageRequest.of(Math.abs(from / size), size);
                 return bookingRepository.findAllBySharerUserId(userId, page);

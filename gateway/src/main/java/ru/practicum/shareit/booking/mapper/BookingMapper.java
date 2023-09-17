@@ -14,6 +14,6 @@ public class BookingMapper {
     }
 
     public static BookingInputDto toBookingInputDto(Booking booking) {
-        return new BookingInputDto(booking.getStart(), booking.getEnd(), booking.getId());
+        return new BookingInputDto(booking.getId(), booking.getStart(), booking.getEnd());
     }
 }

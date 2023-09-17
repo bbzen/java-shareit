@@ -5,7 +5,9 @@ import ru.practicum.shareit.booking.model.BookingInputDto;
 
 @Service
 public interface BookingService {
-    Boolean isBookingValid(BookingInputDto dto);
+    void checkInputBooking(BookingInputDto dto);
 
-    Boolean isUpdateParamsValid(Long ownerUserId, Long bookingId, Boolean approvalState);
+    void checkGetParams(Integer from, Integer size);
+
+    void checkUpdateParams(Long ownerUserId, Long bookingId, Boolean approvalState);
 }

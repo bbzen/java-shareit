@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Service
 @AllArgsConstructor
 public class BookingServiceImpl implements BookingService {
-    public Boolean isBookingValid(BookingInputDto dto) {
+    public void checkInputBooking(BookingInputDto dto) {
         LocalDateTime start = dto.getStart();
         LocalDateTime end = dto.getEnd();
         LocalDateTime now = LocalDateTime.now();
@@ -40,10 +40,16 @@ public class BookingServiceImpl implements BookingService {
             log.debug("Дата начала бронирования не может быть раньше текущей даты.");
             throw new BookingBadRequestException("Дата начала бронирования не может быть раньше текущей даты.");
         }
-        return true;
     }
 
-    public Boolean isUpdateParamsValid(Long ownerUserId, Long bookingId, Boolean approvalState) {
+    @Override
+    public void checkGetParams(Integer from, Integer size) {
+        if (from < 0 || size <= 0) {
+            throw new BookingBadRequestException("Не верно заданы параметры поиска бронирования.");
+        }
+    }
+
+    public void checkUpdateParams(Long ownerUserId, Long bookingId, Boolean approvalState) {
         if (approvalState == null) {
             log.debug("В запросе нет статуса заявки бронирования.");
             throw new BookingBadRequestException("В запросе нет статуса заявки бронирования.");
@@ -56,7 +62,6 @@ public class BookingServiceImpl implements BookingService {
             log.debug("В запросе нет ID заявки на бронирование.");
             throw new BookingBadRequestException("В запросе нет ID заявки на бронирование.");
         }
-        return true;
     }
 }
 
