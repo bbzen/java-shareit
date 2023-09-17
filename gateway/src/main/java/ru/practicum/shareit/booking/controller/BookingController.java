@@ -1,42 +1,48 @@
 package ru.practicum.shareit.booking.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingInputDto;
-import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.booking.client.BookingClient;
+import ru.practicum.shareit.booking.dto.BookItemRequestDto;
+import ru.practicum.shareit.booking.model.BookingState;
 
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
-@RestController
-@AllArgsConstructor
+@Controller
 @RequestMapping(path = "/bookings")
+@RequiredArgsConstructor
+@Slf4j
+@Validated
 public class BookingController {
-    public static final String SHARER_USER_ID_HEADER = "X-Sharer-User-Id";
-    BookingService bookingService;
+    private final BookingClient bookingClient;
 
-    @PostMapping
-    public Booking create(@RequestHeader(value = SHARER_USER_ID_HEADER) Long bookingUserId, @RequestBody BookingInputDto dto) {
-        return bookingService.create(bookingUserId, dto);
+    @GetMapping
+    public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
+                                              @RequestParam(name = "state", defaultValue = "all") String stateParam,
+                                              @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                              @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        BookingState state = BookingState.from(stateParam)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
+        return bookingClient.getBookings(userId, state, from, size);
     }
 
-    @PatchMapping("/{bookingId}")
-    public Booking updateStatus(@RequestHeader(value = SHARER_USER_ID_HEADER) Long ownerUserId, @PathVariable Long bookingId, @RequestParam(value = "approved") Boolean isApproved) {
-        return bookingService.updateBooking(ownerUserId, bookingId, isApproved);
+    @PostMapping
+    public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
+                                           @RequestBody @Valid BookItemRequestDto requestDto) {
+        log.info("Creating booking {}, userId={}", requestDto, userId);
+        return bookingClient.bookItem(userId, requestDto);
     }
 
     @GetMapping("/{bookingId}")
-    public Booking findById(@RequestHeader(value = SHARER_USER_ID_HEADER) Long userId, @PathVariable Long bookingId) {
-        return bookingService.findBooking(userId, bookingId);
-    }
-
-    @GetMapping
-    public List<Booking> findAllByBookerId(@RequestHeader(value = SHARER_USER_ID_HEADER) Long userId, @RequestParam(required = false) String state, @RequestParam(required = false) Integer from, @RequestParam(required = false) Integer size) {
-        return bookingService.findAllByBookerId(userId, state, from, size);
-    }
-
-    @GetMapping("/owner")
-    public List<Booking> findAllBySharerUserId(@RequestHeader(value = SHARER_USER_ID_HEADER) Long userId, @RequestParam(required = false) String state, @RequestParam(required = false) Integer from, @RequestParam(required = false) Integer size) {
-        return bookingService.findAllBySharerUserId(userId, state, from, size);
-    }
-}
+    public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+                                             @PathVariable Long bookingId) {
+        log.info("Get booking {}, userId={}", bookingId, userId);
+        return bookingClient.getBooking(userId, bookingId);
+    }}
