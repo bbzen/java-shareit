@@ -23,6 +23,7 @@ public class BaseClient {
         return get(path, userId, null);
     }
 
+    //todo здесь userId это Header
     protected ResponseEntity<Object> get(String path, Long userId, @Nullable Map<String, Object> parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, userId, parameters, null);
     }
