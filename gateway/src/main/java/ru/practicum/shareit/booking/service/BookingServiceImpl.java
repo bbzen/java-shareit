@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.BookingInputDto;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.exception.model.BookingBadRequestException;
 
 import java.time.LocalDateTime;
@@ -47,6 +48,13 @@ public class BookingServiceImpl implements BookingService {
         if (from < 0 || size <= 0) {
             throw new BookingBadRequestException("Не верно заданы параметры поиска бронирования.");
         }
+    }
+
+    @Override
+    public BookingState checkStateParam(String stateParam) {
+        return BookingState.from(stateParam)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+
     }
 
     public void checkUpdateParams(Long ownerUserId, Long bookingId, Boolean approvalState) {
