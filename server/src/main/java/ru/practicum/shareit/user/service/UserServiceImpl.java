@@ -20,7 +20,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(UserDto userDto) {
-        checkUserData(userDto);
         User currentUser = UserMapper.toUser(userDto);
         return userRepository.save(currentUser);
     }
@@ -40,11 +39,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findById(userId).isPresent()) {
             User initialUser = findUser(userId);
             if (userDto.getName() != null) {
-                checkUserName(userDto);
                 initialUser.setName(userDto.getName());
             }
             if (userDto.getEmail() != null) {
-                checkUserEmail(userDto);
                 initialUser.setEmail(userDto.getEmail());
             }
             return userRepository.save(initialUser);
@@ -56,26 +53,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeUser(Long userId) {
         userRepository.deleteById(userId);
-    }
-
-    private void checkUserData(UserDto  userDto) {
-        checkUserEmail(userDto);
-        checkUserName(userDto);
-    }
-
-    private boolean checkUserName(UserDto userDto) {
-        if (userDto.getName() == null || userDto.getName().isBlank()) {
-            log.debug("Не указано имя пользователя.");
-            throw new UserInvalidDataException("Не указано имя пользователя.");
-        }
-        return true;
-    }
-
-    private boolean checkUserEmail(UserDto userDto) {
-        if (userDto.getEmail() == null || !userDto.getEmail().matches(".+@.+\\..+")) {
-            log.debug("Не верно указан email пользователя.");
-            throw new UserInvalidDataException("Не верно указан email пользователя.");
-        }
-        return true;
     }
 }

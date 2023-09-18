@@ -27,7 +27,6 @@ public class BookingController {
             @RequestHeader(SHARER_USER_ID_HEADER) long userId,
             @RequestBody BookingInputDto requestDto) {
         bookingService.checkInputBooking(requestDto);
-        log.info("Creating booking {}, userId={}", requestDto, userId);
         return bookingClient.create(userId, requestDto);
     }
 
@@ -43,7 +42,6 @@ public class BookingController {
     public ResponseEntity<Object> findById(
             @RequestHeader(SHARER_USER_ID_HEADER) long userId,
             @PathVariable Long bookingId) {
-        log.info("Get booking {}, userId={}", bookingId, userId);
         return bookingClient.findById(userId, bookingId);
     }
 
@@ -55,7 +53,6 @@ public class BookingController {
             @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState state = bookingService.checkStateParam(stateParam);
         bookingService.checkGetParams(from, size);
-        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
         return bookingClient.findAllByBookerId(userId, state, from, size);
     }
 
@@ -67,7 +64,6 @@ public class BookingController {
             @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState state = bookingService.checkStateParam(stateParam);
         bookingService.checkGetParams(from, size);
-        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
         return bookingClient.findAllBySharerUserId(userId, state, from, size);
     }
 }

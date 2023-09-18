@@ -11,22 +11,23 @@ import ru.practicum.shareit.user.model.UserDto;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    @Override
+    public void checkUserData(UserDto userDto) {
+        checkUserEmail(userDto);
+        checkUserName(userDto);
+    }
 
-
-
-    private boolean checkUserName(UserDto userDto) {
+    private void checkUserName(UserDto userDto) {
         if (userDto.getName() == null || userDto.getName().isBlank()) {
             log.debug("Не указано имя пользователя.");
             throw new UserInvalidDataException("Не указано имя пользователя.");
         }
-        return true;
     }
 
-    private boolean checkUserEmail(UserDto userDto) {
+    private void checkUserEmail(UserDto userDto) {
         if (userDto.getEmail() == null || !userDto.getEmail().matches(".+@.+\\..+")) {
             log.debug("Не верно указан email пользователя.");
             throw new UserInvalidDataException("Не верно указан email пользователя.");
         }
-        return true;
     }
 }
