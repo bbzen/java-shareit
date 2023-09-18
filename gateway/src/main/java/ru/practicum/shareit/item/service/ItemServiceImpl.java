@@ -2,9 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.comment.repository.CommentRepository;
 import ru.practicum.shareit.exception.model.ItemInvalidException;
 import ru.practicum.shareit.item.model.ItemInputDto;
 
@@ -12,14 +10,7 @@ import ru.practicum.shareit.item.model.ItemInputDto;
 @Service
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
-
-    @Autowired
-    private CommentRepository commentRepository;
-
-
-
-
-    private boolean doAllChecks(ItemInputDto itemInputDto) {
+    public boolean doAllChecks(ItemInputDto itemInputDto) {
         checkIsAvailable(itemInputDto);
         checkItemDescription(itemInputDto);
         checkItemName(itemInputDto);

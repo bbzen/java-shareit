@@ -17,6 +17,7 @@ import ru.practicum.shareit.booking.service.BookingService;
 @Slf4j
 public class BookingController {
     public static final String SHARER_USER_ID_HEADER = "X-Sharer-User-Id";
+    @Autowired
     private final BookingClient bookingClient;
     @Autowired
     private BookingService bookingService;

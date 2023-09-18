@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
-import ru.practicum.shareit.booking.model.BookingEntityDataKeeping;
 import ru.practicum.shareit.comment.model.CommentResponseDto;
 
 import java.util.List;

@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.model.ItemRequestBadRequestException;
 import ru.practicum.shareit.exception.model.ItemRequestNotFoundException;
 import ru.practicum.shareit.exception.model.UserNotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -37,10 +36,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public ItemRequestRespDto createRequest(Long requesterUserId, ItemRequestInputDto itemRequestInputDto) {
         User currentUser = userRepository.findById(requesterUserId).orElseThrow(() -> new UserNotFoundException("Пользователь " + requesterUserId + " не найден."));
-        if (itemRequestInputDto.getDescription() == null || itemRequestInputDto.getDescription().isBlank()) {
-            log.debug("Описание запроса не может быть пустым.");
-            throw new ItemRequestBadRequestException("Описание запроса не может быть пустым.");
-        }
         ItemRequest resultIR = itemRequestRepository.save(ItemRequestMapper.toItemRequest(itemRequestInputDto, currentUser));
         return ItemRequestMapper.toItemReqRespDto(resultIR);
     }
@@ -75,10 +70,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     .map(ItemRequestMapper::toItemReqRespDto)
                     .peek(i -> i.setItems(itemRepository.findAllByRequestId(i.getId())))
                     .collect(Collectors.toList());
-        }
-        if (from < 0 || size <= 0) {
-            log.debug("Не верно заданы параметры поиска.");
-            throw new ItemRequestBadRequestException("Не верно заданы параметры поиска.");
         }
         Sort sortById = Sort.by(Sort.Direction.ASC, "id");
         Pageable page = PageRequest.of(Math.abs(from / size), size, sortById);

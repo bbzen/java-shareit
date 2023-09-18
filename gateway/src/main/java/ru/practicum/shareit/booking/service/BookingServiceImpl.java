@@ -54,7 +54,6 @@ public class BookingServiceImpl implements BookingService {
     public BookingState checkStateParam(String stateParam) {
         return BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-
     }
 
     public void checkUpdateParams(Long ownerUserId, Long bookingId, Boolean approvalState) {

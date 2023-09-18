@@ -37,7 +37,7 @@ public class ItemClient extends BaseClient {
         Map<String, Object> parameters = Map.of(
                 "text", text
         );
-        return get("/search", null, parameters);
+        return get("/search?text={text}", null, parameters);
     }
 
     public ResponseEntity<Object> findItem(Long sharerUserId, Long itemId) {
