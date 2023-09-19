@@ -6,5 +6,7 @@ import ru.practicum.shareit.user.model.UserDto;
 @Service
 public interface UserService {
 
-    void checkUserData(UserDto userDto);
+    void checkUserDataCreate(UserDto userDto);
+
+    void checkUserDataUpdate(UserDto userDto);
 }

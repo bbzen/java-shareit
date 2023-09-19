@@ -39,10 +39,14 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> findAllPaging(Long requesterUserId, Integer from, Integer size) {
-        Map<String, Object> params = Map.of(
-                "from", from,
-                "size", size
-        );
-        return get("/all?from={from}&size={size}", requesterUserId, params);
+        if (from !=null && size != null) {
+            Map<String, Object> params = Map.of(
+                    "from", from,
+                    "size", size
+            );
+            return get("/all?from={from}&size={size}", requesterUserId, params);
+        } else {
+            return get("/all", requesterUserId);
+        }
     }
 }

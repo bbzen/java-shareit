@@ -32,13 +32,14 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> createUser(@RequestBody UserDto userDto) {
-        userService.checkUserData(userDto);
-        return userClient.createUser(userDto);
+        userService.checkUserDataCreate(userDto);
+        ResponseEntity<Object> result = userClient.createUser(userDto);
+        return result;
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
-        userService.checkUserData(userDto);
+        userService.checkUserDataUpdate(userDto);
         return userClient.updateUser(userId, userDto);
     }
 

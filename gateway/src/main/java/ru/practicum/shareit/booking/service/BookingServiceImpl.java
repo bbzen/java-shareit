@@ -46,15 +46,17 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public void checkGetParams(Integer from, Integer size) {
-        if (from < 0 || size <= 0) {
-            throw new BookingBadRequestException("Не верно заданы параметры поиска бронирования.");
+        if (from != null && size != null) {
+            if (from < 0 || size <= 0) {
+                throw new BookingBadRequestException("Не верно заданы параметры поиска бронирования.");
+            }
         }
     }
 
     @Override
     public BookingState checkStateParam(String stateParam) {
         return BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+                .orElseThrow(() -> new BookingBadRequestException("Unknown state: " + stateParam));
     }
 
     public void checkUpdateParams(Long ownerUserId, Long bookingId, Boolean approvalState) {

@@ -12,9 +12,19 @@ import ru.practicum.shareit.user.model.UserDto;
 public class UserServiceImpl implements UserService {
 
     @Override
-    public void checkUserData(UserDto userDto) {
+    public void checkUserDataCreate(UserDto userDto) {
         checkUserEmail(userDto);
         checkUserName(userDto);
+    }
+
+    @Override
+    public void checkUserDataUpdate(UserDto userDto) {
+        if (userDto.getEmail() != null) {
+            checkUserEmail(userDto);
+        }
+        if (userDto.getName() != null) {
+            checkUserName(userDto);
+        }
     }
 
     private void checkUserName(UserDto userDto) {
