@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Service
 @AllArgsConstructor
 public class BookingServiceImpl implements BookingService {
+
     public void checkInputBooking(BookingInputDto dto) {
         LocalDateTime start = dto.getStart();
         LocalDateTime end = dto.getEnd();
