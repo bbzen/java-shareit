@@ -2,15 +2,12 @@ package ru.practicum.shareit.user.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.model.UserInvalidDataException;
 import ru.practicum.shareit.user.model.UserDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     private UserService userService;
 
@@ -58,6 +55,8 @@ class UserServiceTest {
     }
 
     @Test
-    void checkUserDataUpdate() {
+    void checkUserDataUpdateNormal() {
+        UserDto userSrc = new UserDto("OwnerUser", "user@email.ru");
+        userService.checkUserDataUpdate(userSrc);
     }
 }

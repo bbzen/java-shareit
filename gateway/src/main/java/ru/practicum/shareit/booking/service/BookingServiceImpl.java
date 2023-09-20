@@ -48,6 +48,7 @@ public class BookingServiceImpl implements BookingService {
     public void checkGetParams(Integer from, Integer size) {
         if (from != null && size != null) {
             if (from < 0 || size <= 0) {
+                log.debug("Не верно заданы параметры поиска бронирования.");
                 throw new BookingBadRequestException("Не верно заданы параметры поиска бронирования.");
             }
         }
