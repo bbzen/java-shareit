@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.exception.model.ItemRequestBadRequestException;
 import ru.practicum.shareit.exception.model.ItemRequestNotFoundException;
 import ru.practicum.shareit.exception.model.UserNotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -71,30 +70,6 @@ class ItemRequestServiceTest {
         Exception thrown = assertThrows(UserNotFoundException.class, () -> itemRequestService.createRequest(userRequester.getId(), itemRequestInputDto));
 
         assertEquals("Пользователь " + userRequester.getId() + " не найден.", thrown.getMessage());
-        verify(itemRequestRepository, never()).save(any(ItemRequest.class));
-    }
-
-    @Test
-    public void createRequestNullDescriptionFail() {
-        itemRequestInputDto.setDescription(null);
-        when(userRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.ofNullable(userRequester));
-
-        Exception thrown = assertThrows(ItemRequestBadRequestException.class, () -> itemRequestService.createRequest(userRequester.getId(), itemRequestInputDto));
-
-        assertEquals("Описание запроса не может быть пустым.", thrown.getMessage());
-        verify(itemRequestRepository, never()).save(any(ItemRequest.class));
-    }
-
-    @Test
-    public void createRequestBlancDescriptionFail() {
-        itemRequestInputDto.setDescription("");
-        when(userRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.ofNullable(userRequester));
-
-        Exception thrown = assertThrows(ItemRequestBadRequestException.class, () -> itemRequestService.createRequest(userRequester.getId(), itemRequestInputDto));
-
-        assertEquals("Описание запроса не может быть пустым.", thrown.getMessage());
         verify(itemRequestRepository, never()).save(any(ItemRequest.class));
     }
 
@@ -177,23 +152,5 @@ class ItemRequestServiceTest {
         List<ItemRequestRespDto> resultList = itemRequestService.findAll(userRequester.getId(), null, null);
         assertEquals(srcList.stream().map(ItemRequestRespDto::getDescription).collect(Collectors.toList()).toString(),
                 resultList.stream().map(ItemRequestRespDto::getDescription).collect(Collectors.toList()).toString());
-    }
-
-    @Test
-    public void findAllInvalidFromFail() {
-        when(userRepository.existsById(Mockito.anyLong()))
-                .thenReturn(true);
-
-        Exception thrown = assertThrows(ItemRequestBadRequestException.class, () -> itemRequestService.findAll(userRequester.getId(), -1, null));
-        assertEquals("Не верно заданы параметры поиска.", thrown.getMessage());
-    }
-
-    @Test
-    public void findAllInvalidSizeFail() {
-        when(userRepository.existsById(Mockito.anyLong()))
-                .thenReturn(true);
-
-        Exception thrown = assertThrows(ItemRequestBadRequestException.class, () -> itemRequestService.findAll(userRequester.getId(), 0, -5));
-        assertEquals("Не верно заданы параметры поиска.", thrown.getMessage());
     }
 }
