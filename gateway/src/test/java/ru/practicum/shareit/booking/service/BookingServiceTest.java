@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import org.junit.jupiter.api.Test;
+
 class BookingServiceTest {
 
     @Test

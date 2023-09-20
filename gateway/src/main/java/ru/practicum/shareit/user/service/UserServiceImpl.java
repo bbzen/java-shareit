@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.model.UserInvalidDataException;
@@ -8,7 +7,6 @@ import ru.practicum.shareit.user.model.UserDto;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     @Override
