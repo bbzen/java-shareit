@@ -104,10 +104,51 @@ class BookingServiceTest {
     }
 
     @Test
-    public void checkStateParam() {
+    public void checkStateParamNormal() {
+        String param = "ALL";
+        bookingService.checkStateParam(param);
     }
 
     @Test
-    public void checkUpdateParams() {
+    public void checkStateParamUnknownState() {
+        String param = "Unknown state";
+        String expected = "Unknown state: Unknown state";
+        Exception thrown = assertThrows(BookingBadRequestException.class, () -> bookingService.checkStateParam(param));
+        assertEquals(expected, "Unknown state: " + param);
+    }
+
+    @Test
+    public void checkUpdateParamsNormal() {
+        Long userId = 1L;
+        Long bookingId = 2L;
+        Boolean approvalSate = true;
+        bookingService.checkUpdateParams(userId, bookingId, approvalSate);
+    }
+
+    @Test
+    public void checkUpdateParamsFailApprovalState() {
+        Long userId = 1L;
+        Long bookingId = 2L;
+        Boolean approvalSate = null;
+        Exception thrown = assertThrows(BookingBadRequestException.class, () -> bookingService.checkUpdateParams(userId, bookingId, approvalSate));
+        assertEquals("В запросе нет статуса заявки бронирования.", thrown.getMessage());
+    }
+
+    @Test
+    public void checkUpdateParamsFailUserId() {
+        Long userId = null;
+        Long bookingId = 2L;
+        Boolean approvalSate = true;
+        Exception thrown = assertThrows(BookingBadRequestException.class, () -> bookingService.checkUpdateParams(userId, bookingId, approvalSate));
+        assertEquals("В запросе нет ID Пользователя.", thrown.getMessage());
+    }
+
+    @Test
+    public void checkUpdateParamsFailBookingId() {
+        Long userId = 1L;
+        Long bookingId = null;
+        Boolean approvalSate = true;
+        Exception thrown = assertThrows(BookingBadRequestException.class, () -> bookingService.checkUpdateParams(userId, bookingId, approvalSate));
+        assertEquals("В запросе нет ID заявки на бронирование.", thrown.getMessage());
     }
 }
