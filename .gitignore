@@ -34,3 +34,6 @@ build/
 /db/share-it.mv.db
 /db/share-it.trace.db
 /htmlReport/*
+/db/shareitdb.mv.db
+/db/shareitdb.trace.db
+/server/db/share-it.mv.db
